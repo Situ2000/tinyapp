@@ -17,6 +17,11 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+// Show “hello world" in the /hello route.
+app.get("/hello", (req, res) => {
+  res.send("<html><body>Hello <b>World</b></body></html>\n");
+});
+
 // Show the port number in the terminal.
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
