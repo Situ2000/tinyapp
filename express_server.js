@@ -7,9 +7,14 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-// Show "hello" message in the website.
+// Show "hello" message in the home website.
 app.get("/", (req, res) => {
   res.send("Hello!");
+});
+
+// Show the JSON string in the /urls.json route.
+app.get("/urls.json", (req, res) => {
+  res.json(urlDatabase);
 });
 
 // Show the port number in the terminal.
