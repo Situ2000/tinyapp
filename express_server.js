@@ -36,15 +36,17 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+// Make a post request to /urls.
+app.post("/urls", (req, res) => {
+  let randomId = generateRandomString();
+  urlDatabase[randomId] = req.body.longURL;
+  res.redirect(`/urls/${randomId}`);
+});
+
 // Create new route /urls/:id, the content will be shown when add the keyword id for searching.
 app.get("/urls/:id", (req, res) => {
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
   res.render("urls_show", templateVars);
-});
-
-app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
 });
 
 // Show the port number in the terminal.
