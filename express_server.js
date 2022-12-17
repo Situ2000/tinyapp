@@ -61,6 +61,12 @@ app.post("/urls/:id/delete", (req, res) => {
   res.redirect("/urls");
 });
 
+// Update new urls from edit page, and then go back to the main page.
+app.post("/urls/:id", (req, res) => {
+  urlDatabase[req.params.id] = req.body.longURL;
+  res.redirect("/urls");
+});
+
 // Show the port number in the terminal.
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
