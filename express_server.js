@@ -67,6 +67,13 @@ app.post("/urls/:id", (req, res) => {
   res.redirect("/urls");
 });
 
+// Add a login route.
+app.post("/login", (req, res) => {
+  const username = req.body.username;
+  res.cookie("username", username);
+  res.redirect("/urls");
+});
+
 // Show the port number in the terminal.
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
