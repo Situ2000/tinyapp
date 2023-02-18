@@ -94,10 +94,14 @@ app.post("/urls/:id", (req, res) => {
 
 // Create new route to render the urls_register template for registration page.
 app.get("/register", (req, res) => {
-  const templateVars = { 
-    user_id: req.cookies["user_id"]
-  };
-  res.render("urls_register", templateVars);
+  if (req.cookies["user_id"]) {
+    res.redirect("/urls");
+  } else {
+    const templateVars = { 
+      user_id: req.cookies["user_id"]
+    };
+    res.render("urls_register", templateVars);
+  }
 });
 
 // Make a post request to /register, submiting email and password in the registration page.
@@ -116,10 +120,14 @@ app.post("/register", (req, res) => {
 
 // Create new route to render the urls_login template for log-in page.
 app.get("/login", (req, res) => {
+  if (req.cookies["user_id"]) {
+    res.redirect("/urls");
+  } else {
   const templateVars = { 
     user_id: req.cookies["user_id"]
   };
   res.render("urls_login", templateVars);
+  }
 });
 
 // Make a post request to /login, submiting email and password in the log-in page.
