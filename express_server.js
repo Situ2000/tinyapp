@@ -142,7 +142,7 @@ app.post("/login", (req, res) => {
 // Add a logout route.
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 // Show the port number in the terminal.
