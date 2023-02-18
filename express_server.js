@@ -29,7 +29,6 @@ app.get("/hello", (req, res) => {
 
 // Pass along the urlDatabase and username to the urls_index template.
 app.get("/urls", (req, res) => {
-  console.log(req.cookies["username"]);
   const templateVars = { 
     username: req.cookies["username"],
     urls: urlDatabase 
@@ -77,6 +76,12 @@ app.post("/urls/:id", (req, res) => {
 app.post("/login", (req, res) => {
   const username = req.body.username;
   res.cookie("username", username);
+  res.redirect("/urls");
+});
+
+// Add a logout route.
+app.post("/logout", (req, res) => {
+  res.clearCookie("username");
   res.redirect("/urls");
 });
 
