@@ -12,6 +12,19 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  },
+};
+
 // Show "hello" message in the home website.
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -98,6 +111,15 @@ app.get("/register", (req, res) => {
     username: req.cookies["username"]
   };
   res.render("urls_register", templateVars);
+});
+
+// Make a post request to /register, submiting email and password in the registration page.
+app.post("/register", (req, res) => {
+  let randomId = generateRandomString();
+  req.body['id'] = randomId;
+  users[randomId] = req.body;
+  res.cookie("user_id", randomId);
+  res.redirect("/urls");
 });
 
 // Show the port number in the terminal.
