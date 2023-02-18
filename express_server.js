@@ -92,7 +92,7 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
-// Create new route to render the urls_regester template for registration page.
+// Create new route to render the urls_register template for registration page.
 app.get("/register", (req, res) => {
   const templateVars = { 
     username: req.cookies["username"]
