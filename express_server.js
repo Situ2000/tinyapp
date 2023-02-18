@@ -43,7 +43,7 @@ app.get("/hello", (req, res) => {
 // Pass along the urlDatabase and username to the urls_index template.
 app.get("/urls", (req, res) => {
   const templateVars = { 
-    username: req.cookies["username"],
+    user_id: req.cookies["user_id"],
     urls: urlDatabase 
   };
   res.render("urls_index", templateVars);
@@ -52,7 +52,7 @@ app.get("/urls", (req, res) => {
 // Create new route to render the urls_new template.
 app.get("/urls/new", (req, res) => {
   const templateVars = { 
-    username: req.cookies["username"]
+    user_id: req.cookies["user_id"]
   };
   res.render("urls_new", templateVars);
 });
@@ -67,7 +67,7 @@ app.post("/urls", (req, res) => {
 // Create new route /urls/:id, the content will be shown when add the keyword id for searching.
 app.get("/urls/:id", (req, res) => {
   const templateVars = { 
-    username: req.cookies["username"],
+    user_id: req.cookies["user_id"],
     id: req.params.id, 
     longURL: urlDatabase[req.params.id] 
   };
@@ -101,20 +101,21 @@ app.post("/login", (req, res) => {
 
 // Add a logout route.
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
 // Create new route to render the urls_register template for registration page.
 app.get("/register", (req, res) => {
   const templateVars = { 
-    username: req.cookies["username"]
+    user_id: req.cookies["user_id"]
   };
   res.render("urls_register", templateVars);
 });
 
 // Make a post request to /register, submiting email and password in the registration page.
 app.post("/register", (req, res) => {
+  console.log(req.body)
   let randomId = generateRandomString();
   req.body['id'] = randomId;
   users[randomId] = req.body;
