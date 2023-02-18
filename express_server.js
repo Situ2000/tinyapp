@@ -102,7 +102,7 @@ app.get("/register", (req, res) => {
 
 // Make a post request to /register, submiting email and password in the registration page.
 app.post("/register", (req, res) => {
-  let result = lookup(req.body, users);
+  let result = getUserByEmail(req.body, users);
   if (!result) {
     return res.status(404).send("User does not exist or has been registered");
   }
@@ -124,9 +124,19 @@ app.get("/login", (req, res) => {
 
 // Make a post request to /login, submiting email and password in the log-in page.
 app.post("/login", (req, res) => {
-  const username = req.body.username;
-  res.cookie("username", username);
-  res.redirect("/urls");
+  let result = getUserByEmail(req.body, users);
+  if (result) {
+    return res.status(403).send("User cannot be found");
+  }
+
+  for (key in users) {
+    if (req.body['email'] === users[key]['email'] && req.body['password'] === users[key]['password']) {
+      res.cookie("user_id", key);
+      return res.redirect("/urls");
+    }
+  }
+
+  return res.status(403).send("The password is not matched");
 });
 
 // Add a logout route.
@@ -153,7 +163,7 @@ function generateRandomString() {
 };
 
 // Check whether register information empty or repeated.
-function lookup(newObj, objCollection) {
+function getUserByEmail(newObj, objCollection) {
   for (key in objCollection) {
     if (newObj['email'] === objCollection[key]['email']) {
       return null;
@@ -163,6 +173,6 @@ function lookup(newObj, objCollection) {
   if (newObj['email'] === '' || newObj['password'] === '') {
     return null;
   } else {
-    return newObj;
+    return objCollection;
   } 
 };
