@@ -92,19 +92,6 @@ app.post("/urls/:id", (req, res) => {
   res.redirect("/urls");
 });
 
-// Add a login route.
-app.post("/login", (req, res) => {
-  const username = req.body.username;
-  res.cookie("username", username);
-  res.redirect("/urls");
-});
-
-// Add a logout route.
-app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
-  res.redirect("/urls");
-});
-
 // Create new route to render the urls_register template for registration page.
 app.get("/register", (req, res) => {
   const templateVars = { 
@@ -133,6 +120,19 @@ app.get("/login", (req, res) => {
     user_id: req.cookies["user_id"]
   };
   res.render("urls_login", templateVars);
+});
+
+// Make a post request to /login, submiting email and password in the log-in page.
+app.post("/login", (req, res) => {
+  const username = req.body.username;
+  res.cookie("username", username);
+  res.redirect("/urls");
+});
+
+// Add a logout route.
+app.post("/logout", (req, res) => {
+  res.clearCookie("user_id");
+  res.redirect("/urls");
 });
 
 // Show the port number in the terminal.
