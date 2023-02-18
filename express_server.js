@@ -115,8 +115,12 @@ app.get("/register", (req, res) => {
 
 // Make a post request to /register, submiting email and password in the registration page.
 app.post("/register", (req, res) => {
-  console.log(req.body)
-  let randomId = generateRandomString();
+  let result = lookup(req.body, users);
+  if (!result) {
+    return res.status(404).send("User does not exist or has been registered");
+  }
+
+  const randomId = generateRandomString();
   req.body['id'] = randomId;
   users[randomId] = req.body;
   res.cookie("user_id", randomId);
@@ -138,4 +142,19 @@ function generateRandomString() {
     result += chars[Math.floor(Math.random() * chars.length)];
   }
   return result;
+};
+
+// Check whether register information empty or repeated.
+function lookup(newObj, objCollection) {
+  for (key in objCollection) {
+    if (newObj['email'] === objCollection[key]['email']) {
+      return null;
+    }
+  }
+
+  if (newObj['email'] === '' || newObj['password'] === '') {
+    return null;
+  } else {
+    return newObj;
+  } 
 };
