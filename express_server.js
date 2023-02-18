@@ -92,6 +92,14 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
+// Create new route to render the urls_regester template for registration page.
+app.get("/register", (req, res) => {
+  const templateVars = { 
+    username: req.cookies["username"]
+  };
+  res.render("urls_register", templateVars);
+});
+
 // Show the port number in the terminal.
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
