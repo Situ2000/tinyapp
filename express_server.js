@@ -7,9 +7,20 @@ app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-const urlDatabase = {
+const urlDatabase1 = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
+};
+
+const urlDatabase = {
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW",
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW",
+  },
 };
 
 const users = {
@@ -67,7 +78,9 @@ app.post("/urls", (req, res) => {
     return res.status(401).send("Only registered users can shorten URLs");
   } else {
     let randomId = generateRandomString();
-    urlDatabase[randomId] = req.body.longURL;
+    urlDatabase[randomId] = {
+      longURL: req.body.longURL
+    }
     res.redirect(`/urls/${randomId}`);
   }
 });
@@ -77,7 +90,7 @@ app.get("/urls/:id", (req, res) => {
   const templateVars = { 
     user_id: req.cookies["user_id"],
     id: req.params.id, 
-    longURL: urlDatabase[req.params.id] 
+    longURL: urlDatabase[req.params.id]['longURL']
   };
   res.render("urls_show", templateVars);
 });
@@ -87,20 +100,20 @@ app.get("/u/:id", (req, res) => {
   if (req.params.id === 'undefined') {
     return res.status(404).send("The short URl does not exist");
   } else {
-    const longURL = urlDatabase[req.params.id];
+    const longURL = urlDatabase[req.params.id]['longURL'];
     res.redirect(longURL);
   }
 });
 
 // Delete a URL resource.
 app.post("/urls/:id/delete", (req, res) => {
-  delete urlDatabase[req.params.id];
+  delete urlDatabase[req.params.id]['longURL'];
   res.redirect("/urls");
 });
 
 // Update new urls from edit page, and then go back to the main page.
 app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id] = req.body.longURL;
+  urlDatabase[req.params.id]['longURL'] = req.body.longURL;
   res.redirect("/urls");
 });
 
