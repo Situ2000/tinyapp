@@ -51,17 +51,25 @@ app.get("/urls", (req, res) => {
 
 // Create new route to render the urls_new template.
 app.get("/urls/new", (req, res) => {
+  if (!req.cookies["user_id"]) {
+    res.redirect("/login");
+  } else {
   const templateVars = { 
     user_id: req.cookies["user_id"]
-  };
+  } 
   res.render("urls_new", templateVars);
+ }
 });
 
 // Make a post request to /urls.
 app.post("/urls", (req, res) => {
-  let randomId = generateRandomString();
-  urlDatabase[randomId] = req.body.longURL;
-  res.redirect(`/urls/${randomId}`);
+  if (!req.cookies["user_id"]) {
+    return res.status(401).send("Only registered users can shorten URLs");
+  } else {
+    let randomId = generateRandomString();
+    urlDatabase[randomId] = req.body.longURL;
+    res.redirect(`/urls/${randomId}`);
+  }
 });
 
 // Create new route /urls/:id, the content will be shown when add the keyword id for searching.
