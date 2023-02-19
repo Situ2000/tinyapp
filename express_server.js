@@ -84,8 +84,12 @@ app.get("/urls/:id", (req, res) => {
 
 // Redirect any request to /u/:id to its longURL.
 app.get("/u/:id", (req, res) => {
-  const longURL = urlDatabase[req.params.id];
-  res.redirect(longURL);
+  if (req.params.id === 'undefined') {
+    return res.status(404).send("The short URl does not exist");
+  } else {
+    const longURL = urlDatabase[req.params.id];
+    res.redirect(longURL);
+  }
 });
 
 // Delete a URL resource.
