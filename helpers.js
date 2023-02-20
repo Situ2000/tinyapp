@@ -13,10 +13,10 @@ function generateRandomString() {
 function getUserByEmail(email, database) {
   for (key in database) {
     if (email === database[key]['email']) {
-      return key;
+      return database[key];
     }
   }
-  return null;
+  return undefined;
 };
 
 // Comparing the userID in the urlDatabase with the logged-in user's ID from their cookie.
