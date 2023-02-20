@@ -3,6 +3,7 @@ const cookieSession = require('cookie-session')
 const bcrypt = require("bcryptjs");
 const app = express();
 const PORT = 8080; // default port 8080
+const { generateRandomString, getUserByEmail, urlsForUser } = require('./helpers')
 
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
@@ -222,36 +223,3 @@ app.post("/logout", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
-
-// Generate a string of 6 random alphanumeric characters.
-function generateRandomString() {
-  let result = '';
-  const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
-  for (let i = 6; i > 0; i--) {
-    result += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return result;
-};
-
-// Check whether register information empty or repeated.
-function getUserByEmail(email, database) {
-  for (key in database) {
-    if (email === database[key]['email']) {
-      return key;
-    }
-  }
-  return null;
-};
-
-// Comparing the userID in the urlDatabase with the logged-in user's ID from their cookie.
-function urlsForUser(id, database) {
-  let result = {};
-  for (let key in database) {
-    if (database[key]['userID'] === id) {
-      result[key] = database[key];
-    }
-  }
-  return result;
-};
