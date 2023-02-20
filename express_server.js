@@ -73,7 +73,7 @@ app.get("/urls/new", (req, res) => {
   } 
   const templateVars = { 
     user_id: req.session["user_id"]
-  } 
+  };
   res.render("urls_new", templateVars);
 });
 
@@ -86,7 +86,7 @@ app.post("/urls", (req, res) => {
   urlDatabase[randomId] = {
     longURL: req.body.longURL,
     userID: req.session["user_id"]
-  }
+  };
   res.redirect(`/urls/${randomId}`);
 });
 
@@ -104,7 +104,7 @@ app.get("/urls/:id", (req, res) => {
     user_id: req.session["user_id"],
     id: req.params.id, 
     longURL: URL['longURL']
-  }
+  };
   res.render("urls_show", templateVars);
 });
 
