@@ -164,9 +164,13 @@ app.get("/register", (req, res) => {
 
 // Make a post request to /register, submiting email and password in the registration page.
 app.post("/register", (req, res) => {
-  let result = getUserByEmail(req.body, users);
-  if (!result) {
-    return res.status(404).send("User does not exist or has been registered");
+  if (req.body.email === '' || req.body.password === '') {
+    return res.status(400).send("Email or Password should be provided");
+  }
+  
+  let result = getUserByEmail(req.body.email, users);
+  if (result) {
+    return res.status(400).send("User has been registered");
   }
 
   const randomId = generateRandomString();
@@ -193,8 +197,8 @@ app.get("/login", (req, res) => {
 
 // Make a post request to /login, submiting email and password in the log-in page.
 app.post("/login", (req, res) => {
-  let result = getUserByEmail(req.body, users);
-  if (result) {
+  let result = getUserByEmail(req.body.email, users);
+  if (!result) {
     return res.status(403).send("User cannot be found");
   }
 
@@ -232,18 +236,13 @@ function generateRandomString() {
 };
 
 // Check whether register information empty or repeated.
-function getUserByEmail(newObj, objCollection) {
-  for (key in objCollection) {
-    if (newObj['email'] === objCollection[key]['email']) {
-      return null;
+function getUserByEmail(email, database) {
+  for (key in database) {
+    if (email === database[key]['email']) {
+      return key;
     }
   }
-
-  if (newObj['email'] === '' || newObj['password'] === '') {
-    return null;
-  } else {
-    return objCollection;
-  } 
+  return null;
 };
 
 // Comparing the userID in the urlDatabase with the logged-in user's ID from their cookie.
