@@ -61,6 +61,7 @@ app.get("/urls", (req, res) => {
   } 
   const templateVars = { 
     user_id: req.session["user_id"],
+    username: users[req.session.user_id].email,
     urls: urlsForUser(req.session["user_id"], urlDatabase)
   };
   res.render("urls_index", templateVars);
@@ -72,7 +73,8 @@ app.get("/urls/new", (req, res) => {
     res.redirect("/login");
   } 
   const templateVars = { 
-    user_id: req.session["user_id"]
+    user_id: req.session["user_id"],
+    username: users[req.session.user_id].email
   };
   res.render("urls_new", templateVars);
 });
