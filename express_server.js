@@ -1,10 +1,10 @@
 const express = require("express");
 const cookieSession = require('cookie-session')
 const bcrypt = require("bcryptjs");
-const app = express();
-const PORT = 8080; // default port 8080
 const { generateRandomString, getUserByEmail, urlsForUser } = require('./helpers');
 const { urlDatabase, users } = require('./database');
+const app = express();
+const PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
@@ -14,8 +14,13 @@ app.use(cookieSession({
   // Cookie Options
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
-
-
+app.use((req, res, next) => {
+  const user = users[req.session.user_id];
+  if (!user) {
+    req.session.user_id = undefined;
+  }
+  next();
+});
 
 // Show "hello" message in the home website.
 app.get("/", (req, res) => {
@@ -37,9 +42,15 @@ app.get("/urls", (req, res) => {
   if (!req.session["user_id"]) {
     return res.status(401).send("Only registered users can access their URLs");
   } 
+
+  const user = users[req.session.user_id];
+  if (!user) {
+    return res.status(403).send("User is not found");
+  }
+  
   const templateVars = { 
     user_id: req.session["user_id"],
-    username: users[req.session.user_id].email,
+    username: user.email,
     urls: urlsForUser(req.session["user_id"], urlDatabase)
   };
   res.render("urls_index", templateVars);
@@ -57,19 +68,6 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
-// Make a post request to /urls.
-app.post("/urls", (req, res) => {
-  if (!req.session["user_id"]) {
-    return res.status(401).send("Only registered users can shorten URLs");
-  } 
-  let randomId = generateRandomString();
-  urlDatabase[randomId] = {
-    longURL: req.body.longURL,
-    userID: req.session["user_id"]
-  };
-  res.redirect(`/urls/${randomId}`);
-});
-
 // Create new route /urls/:id, the content will be shown when add the keyword id for searching.
 app.get("/urls/:id", (req, res) => {
   if (!req.session["user_id"]) {
@@ -82,6 +80,7 @@ app.get("/urls/:id", (req, res) => {
   }
   const templateVars = { 
     user_id: req.session["user_id"],
+    username: users[req.session.user_id].email,
     id: req.params.id, 
     longURL: URL['longURL']
   };
@@ -95,6 +94,43 @@ app.get("/u/:id", (req, res) => {
   }
   const longURL = urlDatabase[req.params.id]['longURL'];
   res.redirect(longURL);
+});
+
+// Create new route to render the urls_register template for registration page.
+app.get("/register", (req, res) => {
+  if (req.session["user_id"]) {
+    res.redirect("/urls");
+  } else {
+    const templateVars = { 
+      user_id: req.session["user_id"],
+    };
+    res.render("urls_register", templateVars);
+  }
+});
+
+// Create new route to render the urls_login template for log-in page.
+app.get("/login", (req, res) => {
+  if (req.session["user_id"]) {
+    res.redirect("/urls");
+  } else {
+  const templateVars = { 
+    user_id: req.session["user_id"],
+  };
+  res.render("urls_login", templateVars);
+  }
+});
+
+// Make a post request to /urls.
+app.post("/urls", (req, res) => {
+  if (!req.session["user_id"]) {
+    return res.status(401).send("Only registered users can shorten URLs");
+  } 
+  let randomId = generateRandomString();
+  urlDatabase[randomId] = {
+    longURL: req.body.longURL,
+    userID: req.session["user_id"]
+  };
+  res.redirect(`/urls/${randomId}`);
 });
 
 // Delete a URL resource.
@@ -131,18 +167,6 @@ app.post("/urls/:id", (req, res) => {
   res.redirect("/urls");
 });
 
-// Create new route to render the urls_register template for registration page.
-app.get("/register", (req, res) => {
-  if (req.session["user_id"]) {
-    res.redirect("/urls");
-  } else {
-    const templateVars = { 
-      user_id: req.session["user_id"]
-    };
-    res.render("urls_register", templateVars);
-  }
-});
-
 // Make a post request to /register, submiting email and password in the registration page.
 app.post("/register", (req, res) => {
   if (req.body.email === '' || req.body.password === '') {
@@ -162,18 +186,6 @@ app.post("/register", (req, res) => {
   };
   req.session.user_id = randomId;
   res.redirect("/urls");
-});
-
-// Create new route to render the urls_login template for log-in page.
-app.get("/login", (req, res) => {
-  if (req.session["user_id"]) {
-    res.redirect("/urls");
-  } else {
-  const templateVars = { 
-    user_id: req.session["user_id"]
-  };
-  res.render("urls_login", templateVars);
-  }
 });
 
 // Make a post request to /login, submiting email and password in the log-in page.
