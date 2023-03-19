@@ -47,7 +47,7 @@ app.get("/urls", (req, res) => {
   if (!user) {
     return res.status(403).send("User is not found");
   }
-  
+
   const templateVars = { 
     user_id: req.session["user_id"],
     username: user.email,
@@ -75,9 +75,14 @@ app.get("/urls/:id", (req, res) => {
   }
   
   const URL = urlDatabase[req.params.id];
+  if (!URL) {
+    return res.status(404).send("The short URL does not exist");
+  }
+
   if (URL.userID !== req.session["user_id"]) {
     return res.status(401).send("Users can only access and edit their own URLs");
   }
+
   const templateVars = { 
     user_id: req.session["user_id"],
     username: users[req.session.user_id].email,
@@ -89,9 +94,10 @@ app.get("/urls/:id", (req, res) => {
 
 // Redirect any request to /u/:id to its longURL.
 app.get("/u/:id", (req, res) => {
-  if (req.params.id === 'undefined') {
-    return res.status(404).send("The short URl does not exist");
+  if (!urlDatabase[req.params.id]) {
+    return res.status(404).send("The short URL does not exist");
   }
+
   const longURL = urlDatabase[req.params.id]['longURL'];
   res.redirect(longURL);
 });
