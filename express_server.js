@@ -14,6 +14,7 @@ app.use(cookieSession({
   // Cookie Options
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
+// Reset the database each time after existing
 app.use((req, res, next) => {
   const user = users[req.session.user_id];
   if (!user) {
@@ -21,6 +22,8 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+
 
 // Show "hello" message in the home website.
 app.get("/", (req, res) => {
@@ -61,6 +64,7 @@ app.get("/urls/new", (req, res) => {
   if (!req.session["user_id"]) {
     res.redirect("/login");
   } 
+
   const templateVars = { 
     user_id: req.session["user_id"],
     username: users[req.session.user_id].email
